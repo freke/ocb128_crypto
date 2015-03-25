@@ -1,0 +1,12 @@
+{application, ocb128_crypto,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { ocb128_crypto_app, []}},
+  {env, []}
+ ]}.
