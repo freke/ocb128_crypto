@@ -3,8 +3,11 @@ deps
 *.o
 *.beam
 *.plt
+*.d
 erl_crash.dump
 ebin
 rel/example_project
+priv/
 .concrete/DEV_MODE
 .rebar
+.vagrant
