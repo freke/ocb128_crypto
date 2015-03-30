@@ -4,11 +4,9 @@
 -include_lib("eunit/include/eunit.hrl").
 
 test_crypto_setup() ->
-  application:start(crypto),
   application:start(ocb128_crypto).
 
 test_crypto_teardown(_) ->
-  application:stop(crypto),
   application:stop(ocb128_crypto).
 
 bin_to_hexstr(Bin) ->
@@ -102,7 +100,7 @@ crypto_OCB_AES_128_missing_one_test_() ->
   fun(_) ->
     Plaintext = hexstr_to_bin("000102030405060708090a0b0c0d0e0f10111213"),
     K1 = ocb128_crypto:generate_key(),
-    EN = ocb128_crypto:nonsense(K1),
+    EN = ocb128_crypto:encrypt_iv(K1),
     DK1 = ocb128_crypto:resync(K1, EN),
     EK1 = K1,
     {ok,EK2,_E1} = ocb128_crypto:encrypt(EK1, Plaintext),
@@ -133,7 +131,7 @@ crypto_test_() ->
 test_crypto(Key, Plaintext) ->
   K1 = ocb128_crypto:generate_key(),
   K2 = setelement(2, K1, Key),
-  N = ocb128_crypto:nonsense(K2),
+  N = ocb128_crypto:encrypt_iv(K2),
   K3 = ocb128_crypto:resync(K2, N),
   {ok, _ ,Encrypted} = ocb128_crypto:encrypt(K3, Plaintext),
   {ok, _, Decrypted} = ocb128_crypto:decrypt(K3, Encrypted),
@@ -144,7 +142,7 @@ prop_crypto() ->
   begin
     K1 = ocb128_crypto:generate_key(),
     K2 = setelement(2, K1, Key),
-    N = ocb128_crypto:nonsense(K2),
+    N = ocb128_crypto:encrypt_iv(K2),
     K3 = ocb128_crypto:resync(K2, N),
     {ok, _, Encrypted} = ocb128_crypto:encrypt(K3, Plain),
     {ok, _, Decrypted} = ocb128_crypto:decrypt(K3, Encrypted),
