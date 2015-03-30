@@ -36,7 +36,7 @@ init() ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
--spec encrypt(ocb128_crypto_serv:key(), binary()) ->
+-spec encrypt(ocb128_crypto:key(), binary()) ->
   {
     binary(),
     ocb128_crypto:key()
@@ -49,7 +49,7 @@ encrypt(_Key, _Source) ->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
--spec decrypt(ocb128_crypto_serv:key(), binary()) ->
+-spec decrypt(ocb128_crypto:key(), binary()) ->
                 {binary() | error, ocb128_crypto:key()}.
 decrypt(_Key, _Source) ->
   exit(ocb128_crypto_nif_not_loaded).
