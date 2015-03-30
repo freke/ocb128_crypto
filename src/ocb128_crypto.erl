@@ -1,7 +1,7 @@
 -module(ocb128_crypto).
 
 -export([generate_key/0]).
--export([nonsense/1, resync/2]).
+-export([key/1, encrypt_iv/1, decrypt_iv/1, resync/2]).
 -export([good/1, late/1, lost/1]).
 -export([encrypt/2, decrypt/2]).
 
@@ -19,8 +19,14 @@ generate_key() ->
     resync=0
   }.
 
-nonsense(Key) ->
+key(Key) ->
+  Key#key.key.
+
+encrypt_iv(Key) ->
   Key#key.encrypt_iv.
+
+decrypt_iv(Key) ->
+  Key#key.decrypt_iv.
 
 resync(Key, Div) ->
   Key#key{decrypt_iv=Div, resync=Key#key.resync+1}.
