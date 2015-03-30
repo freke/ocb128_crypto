@@ -15,9 +15,6 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--type statistics() :: {number(), number(), number(), number()}.
--type key() :: {binary(), binary(), binary(), binary(), statistics()}.
-
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
@@ -25,11 +22,13 @@
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
--spec encrypt(key(), iolist()) -> {ok, key(), iolist()}.
+-spec encrypt(ocb128_crypto:key(), iolist()) ->
+  {ok, ocb128_crypto:key(), iolist()}.
 encrypt(Key, Msg) ->
   gen_server:call(?SERVER, {encrypt, Key, Msg}).
 
--spec decrypt(key(), iolist()) -> {ok, key(), iolist()}.
+-spec decrypt(ocb128_crypto:key(), iolist()) ->
+  {ok, ocb128_crypto:key(), iolist()}.
 decrypt(Key, Msg) ->
   gen_server:call(?SERVER, {decrypt, Key, Msg}).
 

@@ -5,6 +5,11 @@
 -export([good/1, late/1, lost/1]).
 -export([encrypt/2, decrypt/2]).
 
+-type statistics() :: {number(), number(), number(), number()}.
+-type key() :: {binary(), binary(), binary(), binary(), statistics()}.
+
+-export_type([key/0]).
+
 -record(key, {key, decrypt_iv, encrypt_iv, history, good, late, lost, resync}).
 
 generate_key() ->
