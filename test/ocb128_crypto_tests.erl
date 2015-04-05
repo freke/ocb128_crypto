@@ -138,7 +138,7 @@ test_crypto(Key, Plaintext) ->
   [?_assertEqual(Plaintext, Decrypted)].
 
 prop_crypto() ->
-  ?FORALL({Key, Plain}, {binary(16), iolist()},
+  ?FORALL({Key, Plain}, {binary(16), iodata()},
   begin
     K1 = ocb128_crypto:generate_key(),
     K2 = setelement(2, K1, Key),

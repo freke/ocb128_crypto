@@ -22,13 +22,13 @@
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
--spec encrypt(ocb128_crypto:key(), iolist()) ->
-  {ok, ocb128_crypto:key(), iolist()}.
+-spec encrypt(ocb128_crypto:key(), iodata()) ->
+  {ok, ocb128_crypto:key(), iodata()}.
 encrypt(Key, Msg) ->
   gen_server:call(?SERVER, {encrypt, Key, Msg}).
 
--spec decrypt(ocb128_crypto:key(), iolist()) ->
-  {ok, ocb128_crypto:key(), iolist()}.
+-spec decrypt(ocb128_crypto:key(), iodata()) ->
+  {ok, ocb128_crypto:key(), iodata()}.
 decrypt(Key, Msg) ->
   gen_server:call(?SERVER, {decrypt, Key, Msg}).
 
