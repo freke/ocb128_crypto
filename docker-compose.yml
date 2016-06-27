@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  ocb128_crypto:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile_dev
+    ports:
+     - "8000:8000"
+    volumes:
+      - .:/src/ocb128_crypto
+      - rebar3:/root/.cache/rebar3
+    working_dir: /src/ocb128_crypto
+#    environment:
+#     - DEBUG=1
+    command: rebar3 shell
+
+volumes:
+  rebar3:
+    driver: local
