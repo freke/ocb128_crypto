@@ -22,12 +22,12 @@ init() ->
     {error, bad_name} ->
       case filelib:is_dir(filename:join(["..", "priv"])) of
         true ->
-          filename:join(["..", "priv", "ocb128_crypto_port_nif"]);
+          filename:join(["..", "priv", "ocb128_crypto"]);
         false ->
-          filename:join(["priv", "ocb128_crypto_port_nif"])
+          filename:join(["priv", "ocb128_crypto"])
       end;
     Dir ->
-      filename:join(Dir, "ocb128_crypto_port_nif")
+      filename:join(Dir, "ocb128_crypto")
     end,
   (catch erlang:load_nif(SoName, 0)).
 

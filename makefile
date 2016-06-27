@@ -1,108 +1,42 @@
-# Copyright 2012 Erlware, LLC. All Rights Reserved.
-#
-# This file is provided to you under the Apache License,
-# Version 2.0 (the "License"); you may not use this file
-# except in compliance with the License.  You may obtain
-# a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-#
+PROJECT=ocb128_crypto
+DOCKER=docker-compose -f docker-compose.yml run --rm --service-ports $(PROJECT)
+REBAR=$(DOCKER) rebar3
 
-ERLFLAGS= -pa $(CURDIR)/.eunit -pa $(CURDIR)/ebin -pa $(CURDIR)/deps/*/ebin
+.PHONY: all compile test clean
 
-DEPS_PLT=$(CURDIR)/.deps.plt
-DEPS=erts kernel stdlib crypto ssl
-
-# =============================================================================
-# Verify that the programs we need to run are installed on this system
-# =============================================================================
-ERL = $(shell which erl)
-
-ifeq ($(ERL),)
-$(error "Erlang not available on this system")
-endif
-
-REBAR=$(shell which rebar)
-
-ifeq ($(REBAR),)
-$(error "Rebar not available on this system")
-endif
-
-ELVIS=$(shell which elvis)
-
-ifeq ($(ELVIS),)
-$(error "Elvis not available on this system")
-endif
-
-.PHONY: all compile doc clean test dialyzer elvis typer shell distclean pdf update-deps rebuild
-
-all: deps compile elvis dialyzer test
-
-	# =============================================================================
-	# Rules to build the system
-	# =============================================================================
-
-deps:
-	$(REBAR) get-deps
-	$(REBAR) compile
-
-update-deps:
-	$(REBAR) update-deps
-	$(REBAR) compile
+all: compile test
 
 compile:
-	$(REBAR) skip_deps=true compile
+	$(REBAR) compile
 
-doc:
-	$(REBAR) skip_deps=true doc
+test: dialyzer eunit ct
+	$(REBAR) cover
 
-eunit: compile
-	$(REBAR) skip_deps=true eunit
+eunit:
+	$(REBAR) eunit
 
-test: compile eunit
+ct:
+	$(REBAR) ct
 
-$(DEPS_PLT):
-	@echo Building local plt at $(DEPS_PLT)
-	@echo
-	dialyzer --output_plt $(DEPS_PLT) --build_plt --apps $(DEPS) -r deps
+dialyzer:
+	$(REBAR) dialyzer
 
-dialyzer: $(DEPS_PLT)
-	dialyzer --fullpath --plt $(DEPS_PLT) -Wrace_conditions -r ./ebin
-
-elvis:
-	$(ELVIS) rock -c elvis.config
-
-typer:
-	typer --show-exported --plt $(DEPS_PLT) -r ./src
-
-shell: deps compile
-	# You often want *rebuilt* rebar tests to be available to the
-	# shell you have to call eunit (to get the tests
-	# rebuilt). However, eunit runs the tests, which probably
-	# fails (thats probably why You want them in the shell). This
-	# runs eunit but tells make to ignore the result.
-	- @$(REBAR) skip_deps=true eunit
-	@$(ERL) $(ERLFLAGS)
-
-pdf:
-	pandoc README.md -o README.pdf
+release:
+	$(DOCKER) rm -Rf _build/prod
+	$(REBAR) as prod compile
+	$(REBAR) as prod release
+	docker build --pull=true --no-cache=true --force-rm=true -t freke/$(PROJECT):0.0.1 -t freke/$(PROJECT):latest -f docker/Dockerfile_prod .
 
 clean:
-	- rm -rf $(CURDIR)/test/*.beam
-	- rm -rf $(CURDIR)/logs
-	- rm -rf $(CURDIR)/ebin
-	- rm -rf $(DEPS_PLT)
-	$(REBAR) skip_deps=true clean
+	$(REBAR) clean --all
+	$(DOCKER) rm -Rf _build/test/cover
+	$(DOCKER) rm -Rf _build/test/logs
 
 distclean: clean
-	- rm -rf $(DEPS_PLT)
-	- rm -rvf $(CURDIR)/deps
+	$(DOCKER) rm -Rf _build
 
-rebuild: distclean deps compile elvis dialyzer test
+upgrade:
+	$(REBAR) upgrade
+
+shell:
+	$(REBAR) shell
