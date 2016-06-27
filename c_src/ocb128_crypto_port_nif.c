@@ -1,8 +1,8 @@
-#include "erl_nif.h"
-
 #include "crypt.h"
 #include <string.h>
 #include <stdio.h>
+
+#include "ocb128_crypto_port_nif.h"
 
 static int
 load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
@@ -11,8 +11,7 @@ load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 }
 
 static int
-upgrade(ErlNifEnv* env, void** priv, void** old_priv,
-ERL_NIF_TERM load_info)
+upgrade(ErlNifEnv* env, void** priv, void** old_priv, ERL_NIF_TERM load_info)
 {
     return 0;
 }
