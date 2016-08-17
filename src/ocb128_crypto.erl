@@ -14,9 +14,9 @@
 
 generate_key() ->
   #key{
-    key=crypto:rand_bytes(16),
-    decrypt_iv=crypto:rand_bytes(16),
-    encrypt_iv=crypto:rand_bytes(16),
+    key=crypto:strong_rand_bytes(16),
+    decrypt_iv=crypto:strong_rand_bytes(16),
+    encrypt_iv=crypto:strong_rand_bytes(16),
     history=binary:copy(<<0>>, 255),
     good=0,
     late=0,
