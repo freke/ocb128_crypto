@@ -9,8 +9,14 @@ all: compile test
 compile:
 	$(REBAR) compile
 
-test: dialyzer eunit ct
+test: dialyzer xref eunit ct ctest
 	$(REBAR) cover
+
+ctest:
+	$(info ************  Tets C Code ************)
+	$(DOCKER) gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
+	docker run --rm -v $(shell pwd):/src/ocb128_crypto ocb128crypto_ocb128_crypto /src/ocb128_crypto/ocb128Test
+	rm -f ocb128Test
 
 eunit:
 	$(REBAR) eunit
@@ -20,6 +26,9 @@ ct:
 
 dialyzer:
 	$(REBAR) dialyzer
+
+xref:
+	$(REBAR) xref
 
 release:
 	$(DOCKER) rm -Rf _build/prod
