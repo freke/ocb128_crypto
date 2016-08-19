@@ -2,7 +2,7 @@ PROJECT=ocb128_crypto
 DOCKER=docker-compose -f docker-compose.yml run --rm --service-ports $(PROJECT)
 REBAR=$(DOCKER) rebar3
 
-.PHONY: all compile test clean
+.PHONY: all compile test clean doc
 
 all: compile test
 
@@ -27,6 +27,9 @@ release:
 	$(REBAR) as prod release
 	docker build --pull=true --no-cache=true --force-rm=true -t freke/$(PROJECT):0.0.1 -t freke/$(PROJECT):latest -f docker/Dockerfile_prod .
 
+doc:
+	$(REBAR) edoc
+
 clean:
 	$(REBAR) clean --all
 	$(DOCKER) rm -Rf _build/test/cover
@@ -34,6 +37,7 @@ clean:
 
 distclean: clean
 	$(DOCKER) rm -Rf _build
+	$(DOCKER) rm -Rf docs
 
 upgrade:
 	$(REBAR) upgrade

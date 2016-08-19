@@ -1,3 +1,5 @@
+%%% @author David AAberg <davabe@hotmail.com>
+
 -module(ocb128_crypto).
 
 -export([generate_key/0]).
@@ -5,13 +7,22 @@
 -export([good/1, late/1, lost/1]).
 -export([encrypt/2, decrypt/2]).
 
--type statistics() :: {number(), number(), number(), number()}.
--type key() :: {binary(), binary(), binary(), binary(), statistics()}.
+-record(key,
+  {
+    key :: <<_:16>>,
+    decrypt_iv :: <<_:16>>,
+    encrypt_iv :: <<_:16>>,
+    history :: binary(),
+    good :: integer(),
+    late :: integer(),
+    lost :: integer(),
+    resync :: integer()
+  }).
 
+-opaque key() :: #key{}.
 -export_type([key/0]).
 
--record(key, {key, decrypt_iv, encrypt_iv, history, good, late, lost, resync}).
-
+-spec generate_key() -> key().
 generate_key() ->
   #key{
     key=crypto:strong_rand_bytes(16),
@@ -24,27 +35,35 @@ generate_key() ->
     resync=0
   }.
 
+-spec key(key()) -> <<_:16>>.
 key(Key) ->
   Key#key.key.
 
+-spec encrypt_iv(key()) -> <<_:16>>.
 encrypt_iv(Key) ->
   Key#key.encrypt_iv.
 
+-spec decrypt_iv(key()) -> <<_:16>>.
 decrypt_iv(Key) ->
   Key#key.decrypt_iv.
 
+-spec resync(key(), <<_:16>>) -> key().
 resync(Key, Div) ->
   Key#key{decrypt_iv=Div, resync=Key#key.resync+1}.
 
+-spec good(key()) -> integer().
 good(Key) ->
   Key#key.good.
 
+-spec late(key()) -> integer().
 late(Key) ->
   Key#key.late.
 
+-spec lost(key()) -> integer().
 lost(Key) ->
   Key#key.lost.
 
+-spec decrypt(key(), binary()) -> {ok, key(), binary()}.
 decrypt(Key, Msg) ->
   {ok, {K, D, E, H, {G, La, Lo, R}}, Decrypted} = ocb128_crypto_serv:decrypt(
     {
@@ -73,6 +92,7 @@ decrypt(Key, Msg) ->
   },
   {ok, NewKey, Decrypted}.
 
+-spec encrypt(key(), binary()) -> {ok, key(), binary()}.
 encrypt(Key, Msg) ->
   {ok, {K, D, E, H, {G, La, Lo, R}}, Encrypted} = ocb128_crypto_serv:encrypt(
     {

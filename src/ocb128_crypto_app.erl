@@ -1,3 +1,6 @@
+%%% @author David AAberg <davabe@hotmail.com>
+%%% @private
+
 -module(ocb128_crypto_app).
 
 -behaviour(application).

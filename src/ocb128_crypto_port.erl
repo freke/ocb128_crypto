@@ -1,21 +1,10 @@
 %%% @author David AAberg <davabe@hotmail.com>
-%%% @copyright (C) 2013,
-%%% @doc
-%%%
-%%% @end
-%%% Created : 21 Mar 2013 by  <davabe@hotmail.com>
+%%% @private
 
 -module(ocb128_crypto_port).
 
 -export([init/0, decrypt/2, encrypt/2]).
 
-%-on_load({init, 0}).
-
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
 -spec init() -> any().
 init() ->
   SoName = case code:priv_dir(ocb128_crypto) of
@@ -31,11 +20,6 @@ init() ->
     end,
   (catch erlang:load_nif(SoName, 0)).
 
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
 -spec encrypt(ocb128_crypto:key(), binary()) ->
   {
     binary(),
@@ -44,11 +28,6 @@ init() ->
 encrypt(_Key, _Source) ->
   exit(ocb128_crypto_nif_not_loaded).
 
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
 -spec decrypt(ocb128_crypto:key(), binary()) ->
                 {binary() | error, ocb128_crypto:key()}.
 decrypt(_Key, _Source) ->
