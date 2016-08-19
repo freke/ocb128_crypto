@@ -1,3 +1,6 @@
+%%% @author David AAberg <davabe@hotmail.com>
+%%% @private
+
 -module(ocb128_crypto_serv).
 -behaviour(gen_server).
 -define(SERVER, ?MODULE).
@@ -15,6 +18,9 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+ -type statistics() :: {number(), number(), number(), number()}.
+ -type key() :: {binary(), binary(), binary(), binary(), statistics()}.
+
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
@@ -22,13 +28,11 @@
 start_link() ->
   gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
--spec encrypt(ocb128_crypto:key(), iodata()) ->
-  {ok, ocb128_crypto:key(), iodata()}.
+-spec encrypt(key(), iodata()) -> {ok, key(), iodata()}.
 encrypt(Key, Msg) ->
   gen_server:call(?SERVER, {encrypt, Key, Msg}).
 
--spec decrypt(ocb128_crypto:key(), iodata()) ->
-  {ok, ocb128_crypto:key(), iodata()}.
+-spec decrypt(key(), iodata()) -> {ok, key(), iodata()}.
 decrypt(Key, Msg) ->
   gen_server:call(?SERVER, {decrypt, Key, Msg}).
 
