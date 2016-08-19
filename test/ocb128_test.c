@@ -138,5 +138,7 @@ int main(int argc, char **argv) {
     }
     printf("Tests run: %d\n", tests_run);
 
+    fflush(NULL);
+
     return result != 0;
 }

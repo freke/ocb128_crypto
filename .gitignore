@@ -13,3 +13,4 @@ erl_crash.dump
 rebar.lock
 Mnesia*
 log
+ocb128Test
