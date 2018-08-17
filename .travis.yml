@@ -9,8 +9,10 @@ jobs:
       script: docker-compose -f docker-compose.yml run ocb128_crypto rebar3 compile
     - stage: test
       script: docker-compose -f docker-compose.yml run ocb128_crypto rebar3 xref
+    -
       script: docker-compose -f docker-compose.yml run ocb128_crypto rebar3 eunit
+    -
       script: docker-compose -f docker-compose.yml run ocb128_crypto rebar3 ct
-      script:
-        - docker-compose -f docker-compose.yml run ocb128_crypto gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
-        - docker-compose -f docker-compose.yml run ocb128_crypto ./ocb128Test
+    -
+      script: docker-compose -f docker-compose.yml run ocb128_crypto gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
+      script: docker-compose -f docker-compose.yml run ocb128_crypto ./ocb128Test
