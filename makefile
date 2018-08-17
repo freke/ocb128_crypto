@@ -1,5 +1,5 @@
 PROJECT=ocb128_crypto
-DOCKER_IMG= freke/ocb128_crypto
+DOCKER_IMG_CTEST= freke/ocb128_crypto_ctest
 DOCKER=docker-compose -f docker-compose.yml run --rm --service-ports $(PROJECT)
 REBAR=$(DOCKER) rebar3
 
@@ -15,8 +15,8 @@ test: dialyzer xref eunit ct ctest
 
 ctest: build_docker
 	$(info ************  Tets C Code ************)
-	docker run --rm -v $(shell pwd):/src/ocb128_crypto -w /src/ocb128_crypto ${DOCKER_IMG} gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
-	docker run --rm -v $(shell pwd):/src/ocb128_crypto -w /src/ocb128_crypto ${DOCKER_IMG} ./ocb128Test
+	$(DOCKER) gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
+	$(DOCKER) ./ocb128Test
 	rm -f ocb128Test
 
 eunit:
@@ -56,4 +56,4 @@ shell: build_docker
 	$(REBAR) shell
 
 build_docker:
-	docker build -t ${DOCKER_IMG} docker
+	docker build -t ${DOCKER_IMG_CTEST} docker
