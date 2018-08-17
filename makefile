@@ -1,4 +1,5 @@
 PROJECT=ocb128_crypto
+DOCKER_IMG= freke/ocb128_crypto
 DOCKER=docker-compose -f docker-compose.yml run --rm --service-ports $(PROJECT)
 REBAR=$(DOCKER) rebar3
 
@@ -12,10 +13,10 @@ compile:
 test: dialyzer xref eunit ct ctest
 	$(REBAR) cover
 
-ctest:
+ctest: build_docker
 	$(info ************  Tets C Code ************)
-	$(DOCKER) gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
-	docker run --rm -v $(shell pwd):/src/ocb128_crypto ocb128crypto_ocb128_crypto /src/ocb128_crypto/ocb128Test
+	docker run --rm -v $(shell pwd):/src/ocb128_crypto -w /src/ocb128_crypto ${DOCKER_IMG} gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
+	docker run --rm -v $(shell pwd):/src/ocb128_crypto -w /src/ocb128_crypto ${DOCKER_IMG} ./ocb128Test
 	rm -f ocb128Test
 
 eunit:
@@ -27,7 +28,7 @@ ct:
 dialyzer:
 	$(REBAR) dialyzer
 
-xref:
+xref: build_docker
 	$(REBAR) xref
 
 release:
@@ -39,17 +40,20 @@ release:
 doc:
 	$(REBAR) edoc
 
-clean:
+clean: build_docker
 	$(REBAR) clean --all
 	$(DOCKER) rm -Rf _build/test/cover
 	$(DOCKER) rm -Rf _build/test/logs
 
-distclean: clean
+distclean: build_docker clean
 	$(DOCKER) rm -Rf _build
 	$(DOCKER) rm -Rf docs
 
-upgrade:
+upgrade: build_docker
 	$(REBAR) upgrade
 
-shell:
+shell: build_docker
 	$(REBAR) shell
+
+build_docker:
+	docker build -t ${DOCKER_IMG} docker
