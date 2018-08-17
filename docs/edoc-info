@@ -1,3 +1,0 @@
-%% encoding: UTF-8
-{application,ocb128_crypto}.
-{modules,[ocb128_crypto]}.

@@ -17,3 +17,13 @@ jobs:
       script:
         - docker-compose -f docker-compose.yml run ocb128_crypto gcc test/ocb128_test.c c_src/crypt.c -Ic_src -lcrypto -o ocb128Test
         - docker-compose -f docker-compose.yml run ocb128_crypto ./ocb128Test
+    - stage: docs
+      script: docker-compose -f docker-compose.yml run ocb128_crypto rebar3 edoc
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: docs
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: master
